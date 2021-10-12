@@ -6,7 +6,7 @@ import 'package:source_gen/source_gen.dart';
 
 /// Builds generators for `build_runner` to run
 Builder union(BuilderOptions options) =>
-    PartBuilder([UnionGenerator()], '.union.boilerplate.dart');
+    SharedPartBuilder([UnionGenerator()], 'union');
 
 Builder copyWith(BuilderOptions options) =>
-    PartBuilder([CopyWithGenerator()], '.copy_with.boilerplate.dart');
+    SharedPartBuilder([CopyWithGenerator()], 'copy_with');
