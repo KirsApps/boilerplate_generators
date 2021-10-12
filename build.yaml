@@ -1,0 +1,14 @@
+
+builders:
+  union:
+    import: "package:boilerplate_generators/builder.dart"
+    builder_factories: ["union"]
+    build_extensions: {".dart": [".union.boilerplate.dart"]}
+    auto_apply: dependents
+    build_to: cache
+  copy_with:
+    import: "package:boilerplate_generators/builder.dart"
+    builder_factories: ["copyWith"]
+    build_extensions: {".dart": [".copy_with.boilerplate.dart"]}
+    auto_apply: dependents
+    build_to: cache
