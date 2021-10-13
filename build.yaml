@@ -2,14 +2,14 @@
 builders:
   union:
     import: "package:boilerplate_generators/builder.dart"
-    builder_factories: ["union"]
+    builder_factories: ["unionGenerator"]
     build_extensions: {".dart": [".union.g.dart"]}
     auto_apply: dependents
     build_to: cache
     applies_builders: ["source_gen|combining_builder"]
   copy_with:
     import: "package:boilerplate_generators/builder.dart"
-    builder_factories: ["copyWith"]
+    builder_factories: ["copyWithGenerator"]
     build_extensions: {".dart": [".copy_with.g.dart"]}
     auto_apply: dependents
     build_to: cache
