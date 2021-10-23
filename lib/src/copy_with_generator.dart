@@ -31,9 +31,12 @@ class CopyWithGenerator extends GeneratorForAnnotation<CopyWith> {
 class \$${element.name}CopyWith$fullGenerics {
 
 final $className $_value;
+
 final $className Function($className) $_callback;
 
 \$${element.name}CopyWith(this.$_value, this.$_callback);
+
+${_callCopyWith(className, parameters)}
 
 ${copyWithNull ? _copyWithNull(className, parameters) : ''}
 }
@@ -51,7 +54,7 @@ _Parameters _parseParameters(ClassElement classElement) {
         name: element.name,
         type: element.type.getDisplayString(withNullability: true),
         nullable: element.type.nullabilitySuffix == NullabilitySuffix.question,
-        ignore: _isFieldIgnored(element),
+        ignored: _isFieldIgnored(classElement, element),
         copyWithAnnotated: _isFieldCopyWithAnnotated(element),
       );
 
@@ -59,7 +62,7 @@ _Parameters _parseParameters(ClassElement classElement) {
   if (constructor is! ConstructorElement) {
     throw '${classElement.name} unnamed constructor required';
   }
-
+  //TODO parameters in constructor not class parameters handle
   final parameters = constructor.parameters;
   if (parameters.isEmpty) {
     throw 'No parameters in ${classElement.name} unnamed constructor';
@@ -77,18 +80,55 @@ _Parameters _parseParameters(ClassElement classElement) {
   );
 }
 
-bool _isFieldIgnored(ParameterElement element) =>
-    const TypeChecker.fromRuntime(CopyWithIgnore).hasAnnotationOf(element);
+bool _isFieldIgnored(ClassElement classElement, ParameterElement element) {
+  final fieldElement = classElement.getField(element.name);
+  if (fieldElement == null) return true;
+  return const TypeChecker.fromRuntime(CopyWithIgnore)
+      .hasAnnotationOf(fieldElement);
+}
 
 bool _isFieldCopyWithAnnotated(ParameterElement element) =>
     const TypeChecker.fromRuntime(CopyWith).hasAnnotationOf(element);
 
+String _callCopyWith(String className, _Parameters parameters) {
+  String _parameterToValue(_Parameter parameter) {
+    String value;
+    if (parameter.ignored) {
+      value = '$_value.${parameter.name}';
+    } else {
+      value = '${parameter.name} ?? $_value.${parameter.name}';
+    }
+    return '$value,';
+  }
+
+  return '''
+$className call({${[
+    ...parameters.requiredPositional,
+    ...parameters.optionalPositional,
+    ...parameters.named
+  ].where((element) => !element.ignored).map((e) => '${e.type.endsWith('?') ? e.type : '${e.type}?'} ${e.name},').join()}
+  }) => $_callback($className(${[
+    ...[
+      ...parameters.requiredPositional,
+      ...parameters.optionalPositional,
+    ].map(_parameterToValue),
+    ...parameters.named.map((e) => '${e.name} : ${_parameterToValue(e)}')
+  ].join()}
+));    
+''';
+}
+
 String _copyWithNull(String className, _Parameters parameters) {
   String _parameterToValue(_Parameter parameter) {
-    var value =
-        '${parameter.name} == copyWithIgnore ? $_value.${parameter.name} : ${parameter.name} ';
-    if (parameter.type != 'Object?') {
-      value += 'as ${parameter.type}';
+    String value;
+    if (parameter.ignored || !parameter.nullable) {
+      value = '$_value.${parameter.name}';
+    } else {
+      value =
+          '${parameter.name} == copyWithIgnore ? $_value.${parameter.name} : ${parameter.name} ';
+      if (parameter.type != 'Object?') {
+        value += 'as ${parameter.type}';
+      }
     }
     return '$value,';
   }
@@ -106,13 +146,13 @@ $className copyWithNull({${[
       ...requiredPositionalNullable,
       ...optionalPositionalNullable,
       ...namedNullable
-    ].map((e) => 'Object? ${e.name} = copyWithIgnore,').join()}
+    ].where((element) => !element.ignored).map((e) => 'Object? ${e.name} = copyWithIgnore,').join()}
   }) => $_callback($className(${[
       ...[
-        ...requiredPositionalNullable,
-        ...optionalPositionalNullable,
+        ...parameters.requiredPositional,
+        ...parameters.optionalPositional,
       ].map(_parameterToValue),
-      ...namedNullable.map((e) => '${e.name} : ${_parameterToValue(e)}')
+      ...parameters.named.map((e) => '${e.name} : ${_parameterToValue(e)}')
     ].join()}
 ));    
 ''';
@@ -134,13 +174,13 @@ class _Parameters {
 
 class _Parameter {
   final bool copyWithAnnotated;
-  final bool ignore;
+  final bool ignored;
   final String name;
   final bool nullable;
   final String type;
   _Parameter({
     required this.copyWithAnnotated,
-    required this.ignore,
+    required this.ignored,
     required this.name,
     required this.nullable,
     required this.type,
