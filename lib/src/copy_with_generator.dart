@@ -25,7 +25,7 @@ class CopyWithGenerator extends GeneratorForAnnotation<CopyWith> {
     final parameters = _parseParameters(element);
     final copyWithNull = annotation.read('copyWithNull').boolValue &&
         parameters.allParameters
-            .any((element) => element.nullable && !element.ignored);
+            .any((element) => element.isNullableAndNotIgnored);
     final typeParameters = element.typeParameters;
     final String generics = _genericTypes(
       typeParameters,
@@ -240,11 +240,12 @@ String _callCopyWithNull(String className, _Parameters parameters) {
     return '$value,';
   }
 
-  final namedNullable = parameters.named.where((element) => element.nullable);
-  final requiredPositionalNullable =
-      parameters.requiredPositional.where((element) => element.nullable);
-  final optionalPositionalNullable =
-      parameters.optionalPositional.where((element) => element.nullable);
+  final namedNullable =
+      parameters.named.where((element) => element.isNullableAndNotIgnored);
+  final requiredPositionalNullable = parameters.requiredPositional
+      .where((element) => element.isNullableAndNotIgnored);
+  final optionalPositionalNullable = parameters.optionalPositional
+      .where((element) => element.isNullableAndNotIgnored);
   if (namedNullable.isNotEmpty ||
       requiredPositionalNullable.isNotEmpty ||
       optionalPositionalNullable.isNotEmpty) {
@@ -253,7 +254,7 @@ $_return call({${[
       ...requiredPositionalNullable,
       ...optionalPositionalNullable,
       ...namedNullable
-    ].where((element) => !element.ignored).map((e) => 'Object? ${e.name} = copyWithIgnore,').join()}
+    ].map((e) => 'Object? ${e.name} = copyWithIgnore,').join()}
   }) => $_callback($className(${[
       ...[
         ...parameters.requiredPositional,
@@ -272,8 +273,7 @@ String _deepCopyWithNull(_Parameters parameters) {
   final _parameters = parameters.allParameters.where(
     (element) =>
         element is _ClassParameter &&
-        element.nullable &&
-        !element.ignored &&
+        element.isNullableAndNotIgnored &&
         element.copyWithAnnotation != null &&
         element.copyWithAnnotation!.copyWithNull,
   );
@@ -361,6 +361,8 @@ class _Parameter {
     required this.nullable,
     required this.type,
   });
+
+  bool get isNullableAndNotIgnored => nullable && !ignored;
 }
 
 class _ClassParameter extends _Parameter {
