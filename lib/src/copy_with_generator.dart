@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:boilerplate_generators/src/annotations.dart';
@@ -57,6 +60,8 @@ final $className Function($className) $_callback;
 
 \$${element.name}CopyWithNull(this.$_value, this.$_callback);
 
+${_deepCopyWithNull(className, parameters)}
+
 ${_callCopyWithNull(className, parameters)}
 }
 ''' : ''}
@@ -70,13 +75,40 @@ String _genericTypes(ClassElement classElement, {required bool fullName}) =>
         : '';
 
 _Parameters _parseParameters(ClassElement classElement) {
-  _Parameter _parseParameter(ParameterElement element) => _Parameter(
+  CopyWith? _copyWithAnnotation(
+    FieldElement fieldElement,
+  ) {
+    final annotation =
+        const TypeChecker.fromRuntime(CopyWith).firstAnnotationOf(fieldElement);
+    if (annotation != null) {
+      final reader = ConstantReader(annotation);
+      final copyWithNull = reader.read('copyWithNull').literalValue as bool?;
+
+      return CopyWith(copyWithNull: copyWithNull!);
+    }
+  }
+
+  _Parameter _parseParameter(ParameterElement element) {
+    final parameterTypeElement = element.type.element;
+    final fieldElement = classElement.getField(element.name);
+    if (parameterTypeElement is ClassElement) {
+      return _ClassParameter(
         name: element.name,
         type: element.type.getDisplayString(withNullability: true),
         nullable: element.type.nullabilitySuffix == NullabilitySuffix.question,
-        ignored: _isFieldIgnored(classElement, element),
-        copyWithAnnotated: _isFieldCopyWithAnnotated(element),
+        ignored: _isFieldIgnored(fieldElement!),
+        copyWithAnnotation: _copyWithAnnotation(fieldElement),
+        generics: _genericTypes(parameterTypeElement, fullName: true),
       );
+    } else {
+      return _Parameter(
+        name: element.name,
+        type: element.type.getDisplayString(withNullability: true),
+        nullable: element.type.nullabilitySuffix == NullabilitySuffix.question,
+        ignored: _isFieldIgnored(fieldElement!),
+      );
+    }
+  }
 
   final constructor = classElement.unnamedConstructor;
   if (constructor is! ConstructorElement) {
@@ -108,15 +140,8 @@ _Parameters _parseParameters(ClassElement classElement) {
   );
 }
 
-bool _isFieldIgnored(ClassElement classElement, ParameterElement element) {
-  final fieldElement = classElement.getField(element.name);
-  if (fieldElement == null) return true;
-  return const TypeChecker.fromRuntime(CopyWithIgnore)
-      .hasAnnotationOf(fieldElement);
-}
-
-bool _isFieldCopyWithAnnotated(ParameterElement element) =>
-    const TypeChecker.fromRuntime(CopyWith).hasAnnotationOf(element);
+bool _isFieldIgnored(FieldElement element) =>
+    const TypeChecker.fromRuntime(CopyWithIgnore).hasAnnotationOf(element);
 
 String _callCopyWith(String className, _Parameters parameters) {
   String _parameterToValue(_Parameter parameter) {
@@ -189,6 +214,34 @@ $className call({${[
   }
 }
 
+String _deepCopyWithNull(String className, _Parameters parameters) {
+  final _parameters = parameters.allParameters.where(
+    (element) =>
+        element is _ClassParameter &&
+        element.nullable &&
+        !element.ignored &&
+        element.copyWithAnnotation != null &&
+        element.copyWithAnnotation!.copyWithNull,
+  ) as Iterable<_ClassParameter>;
+
+  if (_parameters.isNotEmpty) {
+    return _parameters
+        .map(
+          (e) => '''
+${e.name}? get ${e.name} {
+    if ($_value.${e.name} != null) {
+    return ${e.name}${e.generics}($_value.${e.name}!, (value) {
+    return _then($_value.copyWith(${e.name}:  value));
+  });
+  }
+}''',
+        )
+        .join();
+  } else {
+    return '';
+  }
+}
+
 class _Parameters {
   final List<_Parameter> named;
   final List<_Parameter> optionalPositional;
@@ -198,19 +251,36 @@ class _Parameters {
     required this.optionalPositional,
     required this.requiredPositional,
   });
+
+  List<_Parameter> get allParameters => [
+        ...requiredPositional,
+        ...optionalPositional,
+        ...named,
+      ];
 }
 
 class _Parameter {
-  final bool copyWithAnnotated;
   final bool ignored;
   final String name;
   final bool nullable;
   final String type;
   _Parameter({
-    required this.copyWithAnnotated,
     required this.ignored,
     required this.name,
     required this.nullable,
     required this.type,
   });
+}
+
+class _ClassParameter extends _Parameter {
+  final CopyWith? copyWithAnnotation;
+  final String generics;
+  _ClassParameter({
+    required bool ignored,
+    required String name,
+    required bool nullable,
+    required String type,
+    required this.copyWithAnnotation,
+    required this.generics,
+  }) : super(ignored: ignored, name: name, nullable: nullable, type: type);
 }
