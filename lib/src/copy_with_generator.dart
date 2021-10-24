@@ -1,6 +1,3 @@
-import 'dart:math';
-
-import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
@@ -65,6 +62,8 @@ final $className $_value;
 final $_return Function($className) $_callback;
 
 \$${element.name}CopyWith(this.$_value, this.$_callback);
+
+${_deepCopyWith(parameters)}
 
 ${_callCopyWith(className, parameters)}
 }
@@ -195,6 +194,31 @@ $_return call({${[
   ].join()}
 ));    
 ''';
+}
+
+String _deepCopyWith(_Parameters parameters) {
+  final _parameters = parameters.allParameters.where(
+    (element) =>
+        element is _ClassParameter &&
+        !element.nullable &&
+        !element.ignored &&
+        element.copyWithAnnotation != null,
+  );
+
+  if (_parameters.isNotEmpty) {
+    return _parameters.map(
+      (e) {
+        final generics = (e as _ClassParameter).generics;
+        return '''
+\$${e.className}CopyWith$generics get ${e.name} =>
+     \$${e.className}CopyWith$generics($_value.${e.name}, 
+    (value) => $_callback($_value.copyWith(${e.name}:  value)));
+''';
+      },
+    ).join();
+  } else {
+    return '';
+  }
 }
 
 String _callCopyWithNull(String className, _Parameters parameters) {
