@@ -22,7 +22,10 @@ class CopyWithGenerator extends GeneratorForAnnotation<CopyWith> {
         element: element,
       );
     }
-    final copyWithNull = annotation.read('copyWithNull').boolValue;
+    final parameters = _parseParameters(element);
+    final copyWithNull = annotation.read('copyWithNull').boolValue &&
+        parameters.allParameters
+            .any((element) => element.nullable && !element.ignored);
     final typeParameters = element.typeParameters;
     final String generics = _genericTypes(
       typeParameters,
@@ -43,7 +46,6 @@ class CopyWithGenerator extends GeneratorForAnnotation<CopyWith> {
       fullName: true,
       additionalGeneric: _return,
     );
-    final parameters = _parseParameters(element);
 
     return '''
 /// @nodoc     
@@ -94,7 +96,9 @@ String _genericTypes(
 }) =>
     typeParameters.isNotEmpty
         ? '<${typeParameters.map((e) => fullName ? e.getDisplayString(withNullability: true) : e.name).join(',')}${additionalGeneric.isNotEmpty ? ', $additionalGeneric' : ''}>'
-        : '';
+        : additionalGeneric.isNotEmpty
+            ? '<$additionalGeneric>'
+            : '';
 
 _Parameters _parseParameters(ClassElement classElement) {
   CopyWith? _copyWithAnnotation(
