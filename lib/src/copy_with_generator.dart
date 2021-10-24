@@ -27,6 +27,11 @@ class CopyWithGenerator extends GeneratorForAnnotation<CopyWith> {
     final parameters = _parseParameters(element);
 
     return '''
+/// @nodoc     
+extension \$${element.name}CopyWithExtension$fullGenerics on $className {
+\$${element.name}CopyWith$generics get copyWith => \$${element.name}CopyWith$generics(this, (value)=> value);
+}  
+    
 /// @nodoc    
 class \$${element.name}CopyWith$fullGenerics {
 
