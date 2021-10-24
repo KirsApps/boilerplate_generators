@@ -29,7 +29,10 @@ class CopyWithGenerator extends GeneratorForAnnotation<CopyWith> {
     return '''
 /// @nodoc     
 extension \$${element.name}CopyWithExtension$fullGenerics on $className {
+
 \$${element.name}CopyWith$generics get copyWith => \$${element.name}CopyWith$generics(this, (value)=> value);
+
+${copyWithNull ? '\$${element.name}CopyWithNull$generics get copyWithNull => \$${element.name}CopyWithNull$generics(this, (value)=> value);' : ''}
 }  
     
 /// @nodoc    
@@ -42,9 +45,21 @@ final $className Function($className) $_callback;
 \$${element.name}CopyWith(this.$_value, this.$_callback);
 
 ${_callCopyWith(className, parameters)}
-
-${copyWithNull ? _copyWithNull(className, parameters) : ''}
 }
+
+${copyWithNull ? '''
+/// @nodoc    
+class \$${element.name}CopyWithNull$fullGenerics {
+
+final $className $_value;
+
+final $className Function($className) $_callback;
+
+\$${element.name}CopyWithNull(this.$_value, this.$_callback);
+
+${_callCopyWithNull(className, parameters)}
+}
+''' : ''}
 ''';
   }
 }
@@ -131,7 +146,7 @@ $className call({${[
 ''';
 }
 
-String _copyWithNull(String className, _Parameters parameters) {
+String _callCopyWithNull(String className, _Parameters parameters) {
   String _parameterToValue(_Parameter parameter) {
     String value;
     if (parameter.ignored || !parameter.nullable) {
@@ -155,7 +170,7 @@ String _copyWithNull(String className, _Parameters parameters) {
       requiredPositionalNullable.isNotEmpty ||
       optionalPositionalNullable.isNotEmpty) {
     return '''
-$className copyWithNull({${[
+$className call({${[
       ...requiredPositionalNullable,
       ...optionalPositionalNullable,
       ...namedNullable
