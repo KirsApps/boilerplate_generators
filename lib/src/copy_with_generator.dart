@@ -169,9 +169,6 @@ _Parameters _parseParameters(ClassElement classElement) {
   );
 }
 
-bool _isFieldIgnored(FieldElement element) =>
-    const TypeChecker.fromRuntime(CopyWithIgnore).hasAnnotationOf(element);
-
 String _callCopyWith(String className, _Parameters parameters) {
   String _parameterToValue(_Parameter parameter) {
     String value;
@@ -295,6 +292,9 @@ String _deepCopyWithNull(_Parameters parameters) {
     return '';
   }
 }
+
+bool _isFieldIgnored(FieldElement element) =>
+    const TypeChecker.fromRuntime(CopyWithIgnore).hasAnnotationOf(element);
 
 List<ParameterElement> _nonFieldParameters(
   ClassElement classElement,
