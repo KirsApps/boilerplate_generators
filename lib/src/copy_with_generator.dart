@@ -62,8 +62,16 @@ _Parameters _parseParameters(ClassElement classElement) {
   if (constructor is! ConstructorElement) {
     throw '${classElement.name} unnamed constructor required';
   }
-  //TODO parameters in constructor not class parameters handle
   final parameters = constructor.parameters;
+  final nonFieldParameters = parameters
+      .where((element) => classElement.getField(element.name) == null);
+  if (nonFieldParameters.isNotEmpty) {
+    throw InvalidGenerationSourceError(
+      'In ${classElement.name} unnamed constructor founded parameters that are '
+      'not class fields - ${nonFieldParameters.join(', ')}. This parameters are not supported',
+      element: classElement,
+    );
+  }
   if (parameters.isEmpty) {
     throw 'No parameters in ${classElement.name} unnamed constructor';
   }
