@@ -10,6 +10,7 @@ import 'package:source_gen/source_gen.dart';
 
 const String _value = '_value';
 const String _callback = '_callback';
+const String _return = '\$Return';
 
 class CopyWithGenerator extends GeneratorForAnnotation<CopyWith> {
   @override
@@ -26,26 +27,42 @@ class CopyWithGenerator extends GeneratorForAnnotation<CopyWith> {
     }
     final copyWithNull = annotation.read('copyWithNull').boolValue;
     final typeParameters = element.typeParameters;
-    final String generics = _genericTypes(typeParameters, fullName: false);
-    final String fullGenerics = _genericTypes(typeParameters, fullName: true);
+    final String generics = _genericTypes(
+      typeParameters,
+      fullName: false,
+    );
     final className = '${element.name}$generics';
+    final copyWithGenerics = _genericTypes(
+      typeParameters,
+      fullName: false,
+      additionalGeneric: className,
+    );
+    final String fullGenerics = _genericTypes(
+      typeParameters,
+      fullName: true,
+    );
+    final String fullCopyWithGenerics = _genericTypes(
+      typeParameters,
+      fullName: true,
+      additionalGeneric: _return,
+    );
     final parameters = _parseParameters(element);
 
     return '''
 /// @nodoc     
 extension \$${element.name}CopyWithExtension$fullGenerics on $className {
 
-\$${element.name}CopyWith$generics get copyWith => \$${element.name}CopyWith$generics(this, (value)=> value);
+\$${element.name}CopyWith$copyWithGenerics get copyWith => \$${element.name}CopyWith$copyWithGenerics(this, (value)=> value);
 
-${copyWithNull ? '\$${element.name}CopyWithNull$generics get copyWithNull => \$${element.name}CopyWithNull$generics(this, (value)=> value);' : ''}
+${copyWithNull ? '\$${element.name}CopyWithNull$copyWithGenerics get copyWithNull => \$${element.name}CopyWithNull$copyWithGenerics(this, (value)=> value);' : ''}
 }  
     
 /// @nodoc    
-class \$${element.name}CopyWith$fullGenerics {
+class \$${element.name}CopyWith$fullCopyWithGenerics {
 
 final $className $_value;
 
-final $className Function($className) $_callback;
+final $_return Function($className) $_callback;
 
 \$${element.name}CopyWith(this.$_value, this.$_callback);
 
@@ -54,11 +71,11 @@ ${_callCopyWith(className, parameters)}
 
 ${copyWithNull ? '''
 /// @nodoc    
-class \$${element.name}CopyWithNull$fullGenerics {
+class \$${element.name}CopyWithNull$fullCopyWithGenerics {
 
-final $className $_value;
+final $className  $_value;
 
-final $className Function($className) $_callback;
+final $_return  Function($className) $_callback;
 
 \$${element.name}CopyWithNull(this.$_value, this.$_callback);
 
@@ -74,9 +91,10 @@ ${_callCopyWithNull(className, parameters)}
 String _genericTypes(
   List<TypeParameterElement> typeParameters, {
   required bool fullName,
+  String additionalGeneric = '',
 }) =>
     typeParameters.isNotEmpty
-        ? '<${typeParameters.map((e) => fullName ? e.getDisplayString(withNullability: true) : e.name).join(',')}>'
+        ? '<${typeParameters.map((e) => fullName ? e.getDisplayString(withNullability: true) : e.name).join(',')}${additionalGeneric.isNotEmpty ? ', $additionalGeneric' : ''}>'
         : '';
 
 _Parameters _parseParameters(ClassElement classElement) {
@@ -163,7 +181,7 @@ String _callCopyWith(String className, _Parameters parameters) {
   }
 
   return '''
-$className call({${[
+$_return call({${[
     ...parameters.requiredPositional,
     ...parameters.optionalPositional,
     ...parameters.named
@@ -203,7 +221,7 @@ String _callCopyWithNull(String className, _Parameters parameters) {
       requiredPositionalNullable.isNotEmpty ||
       optionalPositionalNullable.isNotEmpty) {
     return '''
-$className call({${[
+$_return call({${[
       ...requiredPositionalNullable,
       ...optionalPositionalNullable,
       ...namedNullable
@@ -330,7 +348,11 @@ class _ClassParameter extends _Parameter {
   }) : super(ignored: ignored, name: name, nullable: nullable, type: type);
 
   String get generics {
-    final match = RegExp('<.+?>').firstMatch(type);
-    return match?.group(0) ?? '';
+    final result = RegExp('<.+?>').firstMatch(type)?.group(0);
+    if (copyWithAnnotation != null) {
+      return result?.replaceFirst('>', ', $_return>') ?? '<$_return>';
+    } else {
+      return result ?? '';
+    }
   }
 }
