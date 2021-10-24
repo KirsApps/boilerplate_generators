@@ -28,12 +28,12 @@ class CopyWithGenerator extends GeneratorForAnnotation<CopyWith> {
     final typeParameters = element.typeParameters;
     final String generics = _genericTypes(typeParameters, fullName: false);
     final String fullGenerics = _genericTypes(typeParameters, fullName: true);
-    final classNameWithGenerics = '${element.name}$generics';
+    final className = '${element.name}$generics';
     final parameters = _parseParameters(element);
 
     return '''
 /// @nodoc     
-extension \$${element.name}CopyWithExtension$fullGenerics on $classNameWithGenerics {
+extension \$${element.name}CopyWithExtension$fullGenerics on $className {
 
 \$${element.name}CopyWith$generics get copyWith => \$${element.name}CopyWith$generics(this, (value)=> value);
 
@@ -43,28 +43,28 @@ ${copyWithNull ? '\$${element.name}CopyWithNull$generics get copyWithNull => \$$
 /// @nodoc    
 class \$${element.name}CopyWith$fullGenerics {
 
-final $classNameWithGenerics $_value;
+final $className $_value;
 
-final $classNameWithGenerics Function($classNameWithGenerics) $_callback;
+final $className Function($className) $_callback;
 
 \$${element.name}CopyWith(this.$_value, this.$_callback);
 
-${_callCopyWith(classNameWithGenerics, parameters)}
+${_callCopyWith(className, parameters)}
 }
 
 ${copyWithNull ? '''
 /// @nodoc    
 class \$${element.name}CopyWithNull$fullGenerics {
 
-final $classNameWithGenerics $_value;
+final $className $_value;
 
-final $classNameWithGenerics Function($classNameWithGenerics) $_callback;
+final $className Function($className) $_callback;
 
 \$${element.name}CopyWithNull(this.$_value, this.$_callback);
 
-${_deepCopyWithNull(element.name, parameters)}
+${_deepCopyWithNull(parameters)}
 
-${_callCopyWithNull(classNameWithGenerics, parameters)}
+${_callCopyWithNull(className, parameters)}
 }
 ''' : ''}
 ''';
@@ -93,24 +93,27 @@ _Parameters _parseParameters(ClassElement classElement) {
     }
   }
 
-  _Parameter _parseParameter(ParameterElement element) {
-    final parameterTypeElement = element.type.element;
-    final fieldElement = _classOrSuperClassField(classElement, element.name);
+  _Parameter _parseParameter(ParameterElement parameterElement) {
+    final parameterTypeElement = parameterElement.type.element;
+    final fieldElement =
+        _classOrSuperClassField(classElement, parameterElement.name);
+    final type = parameterElement.type.getDisplayString(withNullability: true);
     if (parameterTypeElement is ClassElement) {
-      print('element ${element.name} ${element.typeParameters}');
       return _ClassParameter(
-        name: element.name,
-        type: element.type.getDisplayString(withNullability: true),
-        nullable: element.type.nullabilitySuffix == NullabilitySuffix.question,
+        name: parameterElement.name,
+        type: type,
+        nullable: parameterElement.type.nullabilitySuffix ==
+            NullabilitySuffix.question,
         ignored: _isFieldIgnored(fieldElement!),
+        className: parameterTypeElement.name,
         copyWithAnnotation: _copyWithAnnotation(parameterTypeElement),
-        generics: _genericTypes(element.typeParameters, fullName: true),
       );
     } else {
       return _Parameter(
-        name: element.name,
-        type: element.type.getDisplayString(withNullability: true),
-        nullable: element.type.nullabilitySuffix == NullabilitySuffix.question,
+        name: parameterElement.name,
+        type: type,
+        nullable: parameterElement.type.nullabilitySuffix ==
+            NullabilitySuffix.question,
         ignored: _isFieldIgnored(fieldElement!),
       );
     }
@@ -219,7 +222,7 @@ $className call({${[
   }
 }
 
-String _deepCopyWithNull(String className, _Parameters parameters) {
+String _deepCopyWithNull(_Parameters parameters) {
   final _parameters = parameters.allParameters.where(
     (element) =>
         element is _ClassParameter &&
@@ -230,17 +233,18 @@ String _deepCopyWithNull(String className, _Parameters parameters) {
   );
 
   if (_parameters.isNotEmpty) {
-    return _parameters
-        .map(
-          (e) => '''
-\$${className}CopyWithNull${(e as _ClassParameter).generics} get ${e.name} {
+    return _parameters.map(
+      (e) {
+        final generics = (e as _ClassParameter).generics;
+        return '''
+\$${e.className}CopyWithNull$generics? get ${e.name} {
     if ($_value.${e.name} != null) {
-    return \$${className}CopyWithNull${e.generics}($_value.${e.name}!, 
+    return \$${e.className}CopyWithNull$generics($_value.${e.name}!, 
     (value) => $_callback($_value.copyWith(${e.name}:  value)));
   }
-}''',
-        )
-        .join();
+}''';
+      },
+    ).join();
   } else {
     return '';
   }
@@ -314,14 +318,19 @@ class _Parameter {
 }
 
 class _ClassParameter extends _Parameter {
+  final String className;
   final CopyWith? copyWithAnnotation;
-  final String generics;
   _ClassParameter({
     required bool ignored,
     required String name,
     required bool nullable,
     required String type,
     required this.copyWithAnnotation,
-    required this.generics,
+    required this.className,
   }) : super(ignored: ignored, name: name, nullable: nullable, type: type);
+
+  String get generics {
+    final match = RegExp('<.+?>').firstMatch(type);
+    return match?.group(0) ?? '';
+  }
 }
