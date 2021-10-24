@@ -1,9 +1,9 @@
 
 builders:
-  union:
+  props:
     import: "package:boilerplate_generators/builder.dart"
-    builder_factories: ["unionGenerator"]
-    build_extensions: {".dart": [".union.g.dart"]}
+    builder_factories: ["propsGenerator"]
+    build_extensions: {".dart": [".props.g.dart"]}
     auto_apply: dependents
     build_to: cache
     applies_builders: ["source_gen|combining_builder"]

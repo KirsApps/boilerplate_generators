@@ -2,6 +2,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:boilerplate_generators/src/annotations.dart';
+import 'package:boilerplate_generators/src/utils.dart';
 import 'package:build/build.dart';
 import 'package:source_gen/source_gen.dart';
 
@@ -27,21 +28,21 @@ class CopyWithGenerator extends GeneratorForAnnotation<CopyWith> {
         parameters.allParameters
             .any((element) => element.isNullableAndNotIgnored);
     final typeParameters = element.typeParameters;
-    final String generics = _genericTypes(
+    final String generics = genericTypes(
       typeParameters,
       fullName: false,
     );
     final className = '${element.name}$generics';
-    final copyWithGenerics = _genericTypes(
+    final copyWithGenerics = genericTypes(
       typeParameters,
       fullName: false,
       additionalGeneric: className,
     );
-    final String fullGenerics = _genericTypes(
+    final String fullGenerics = genericTypes(
       typeParameters,
       fullName: true,
     );
-    final String fullCopyWithGenerics = _genericTypes(
+    final String fullCopyWithGenerics = genericTypes(
       typeParameters,
       fullName: true,
       additionalGeneric: _return,
@@ -88,17 +89,6 @@ ${_callCopyWithNull(className, parameters)}
 ''';
   }
 }
-
-String _genericTypes(
-  List<TypeParameterElement> typeParameters, {
-  required bool fullName,
-  String additionalGeneric = '',
-}) =>
-    typeParameters.isNotEmpty
-        ? '<${typeParameters.map((e) => fullName ? e.getDisplayString(withNullability: true) : e.name).join(',')}${additionalGeneric.isNotEmpty ? ', $additionalGeneric' : ''}>'
-        : additionalGeneric.isNotEmpty
-            ? '<$additionalGeneric>'
-            : '';
 
 _Parameters _parseParameters(ClassElement classElement) {
   CopyWith? _copyWithAnnotation(

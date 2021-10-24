@@ -1,8 +1,14 @@
-class Union {
-  const Union();
+class Props {
+  const Props();
 }
 
-const union = Union();
+class ExcludeFromProps {
+  const ExcludeFromProps();
+}
+
+const props = Props();
+
+const excludeFromProps = ExcludeFromProps();
 
 class CopyWith {
   final bool copyWithNull;
