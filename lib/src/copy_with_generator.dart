@@ -24,9 +24,7 @@ class CopyWithGenerator extends GeneratorForAnnotation<CopyWith> {
       );
     }
     final parameters = _parseParameters(element);
-    final copyWithNull = annotation.read('copyWithNull').boolValue &&
-        parameters.allParameters
-            .any((element) => element.isNullableAndNotIgnored);
+    final copyWithNull = annotation.read('copyWithNull').boolValue;
     final typeParameters = element.typeParameters;
     final String generics = genericTypes(
       typeParameters,
@@ -170,21 +168,25 @@ String _callCopyWith(String className, _Parameters parameters) {
     return '$value,';
   }
 
-  return '''
+  if (parameters.allParameters.any((element) => !element.ignored)) {
+    return '''
 $_return call({${[
-    ...parameters.requiredPositional,
-    ...parameters.optionalPositional,
-    ...parameters.named
-  ].where((element) => !element.ignored).map((e) => '${e.type.endsWith('?') ? e.type : '${e.type}?'} ${e.name},').join()}
-  }) => $_callback($className(${[
-    ...[
       ...parameters.requiredPositional,
       ...parameters.optionalPositional,
-    ].map(_parameterToValue),
-    ...parameters.named.map((e) => '${e.name} : ${_parameterToValue(e)}')
-  ].join()}
+      ...parameters.named
+    ].where((element) => !element.ignored).map((e) => '${e.type.endsWith('?') ? e.type : '${e.type}?'} ${e.name},').join()}
+  }) => $_callback($className(${[
+      ...[
+        ...parameters.requiredPositional,
+        ...parameters.optionalPositional,
+      ].map(_parameterToValue),
+      ...parameters.named.map((e) => '${e.name} : ${_parameterToValue(e)}')
+    ].join()}
 ));    
 ''';
+  } else {
+    return '';
+  }
 }
 
 String _deepCopyWith(_Parameters parameters) {
