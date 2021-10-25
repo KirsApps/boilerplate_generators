@@ -27,13 +27,14 @@ class PropsGenerator extends GeneratorForAnnotation<Props> {
       );
     }
     final generics = genericTypes(element.typeParameters, fullName: false);
-    final fields =
-        element.fields.where((element) => !_isFieldExcluded(element));
+    final fields = element.fields.where(
+      (element) => element.name != 'props' && !_isFieldExcluded(element),
+    );
 
     return '''
     /// @nodoc
-    List<Object?> _\$${element.name}Props$generics(${element.name}$generics instance) => 
-        [${fields.map((e) => 'instance.${e.name}').join(',')}];
+    List<Object?> _\$${element.name}Props$generics(${element.name}$generics instance,{List<Object?>? superClassProps}) => 
+        [${fields.map((e) => 'instance.${e.name}').join(',')}, ...?superClassProps];
         ''';
   }
 }
