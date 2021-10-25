@@ -64,7 +64,17 @@ final $_return Function($className) $_callback;
 
 \$${element.name}CopyWith(this.$_value, this.$_callback);
 
-${_deepCopyWith(parameters)}
+${_deepCopyWith(
+      parameters.allParameters
+          .where(
+            (element) =>
+                element is _ClassParameter &&
+                !element.ignored &&
+                element.copyWithAnnotation != null,
+          )
+          .toList(),
+      generatedClassName: 'CopyWith',
+    )}
 
 ${_callCopyWith(className, parameters)}
 }
@@ -79,7 +89,18 @@ final $_return  Function($className) $_callback;
 
 \$${element.name}CopyWithNull(this.$_value, this.$_callback);
 
-${_deepCopyWithNull(parameters)}
+${_deepCopyWith(
+            parameters.allParameters
+                .where(
+                  (element) =>
+                      element is _ClassParameter &&
+                      !element.ignored &&
+                      element.copyWithAnnotation != null &&
+                      element.copyWithAnnotation!.copyWithNull,
+                )
+                .toList(),
+            generatedClassName: 'CopyWithNull',
+          )}
 
 ${_callCopyWithNull(className, parameters)}
 }
@@ -186,23 +207,22 @@ $_return call({${[
   }
 }
 
-String _deepCopyWith(_Parameters parameters) {
-  final _parameters = parameters.allParameters.where(
-    (element) =>
-        element is _ClassParameter &&
-        !element.nullable &&
-        !element.ignored &&
-        element.copyWithAnnotation != null,
-  );
-
-  if (_parameters.isNotEmpty) {
-    return _parameters.map(
+String _deepCopyWith(
+  List<_Parameter> parameters, {
+  required String generatedClassName,
+}) {
+  String _addIfNullable(_Parameter _parameter, String value) =>
+      _parameter.nullable ? value : '';
+  if (parameters.isNotEmpty) {
+    return parameters.map(
       (e) {
         final generics = (e as _ClassParameter).generics;
         return '''
-\$${e.className}CopyWith$generics get ${e.name} =>
-     \$${e.className}CopyWith$generics($_value.${e.name}, 
+\$${e.className}$generatedClassName$generics${_addIfNullable(e, '?')} get ${e.name} 
+ ${e.nullable ? '{ if ($_value.${e.name} != null) { return' : '=>'}
+   \$${e.className}$generatedClassName$generics($_value.${e.name}${_addIfNullable(e, '!')}, 
     (value) => $_callback($_value.copyWith(${e.name}:  value)));
+${_addIfNullable(e, '}}')}
 ''';
       },
     ).join();
@@ -250,33 +270,6 @@ $_return call({${[
     ].join()}
 ));    
 ''';
-  } else {
-    return '';
-  }
-}
-
-String _deepCopyWithNull(_Parameters parameters) {
-  final _parameters = parameters.allParameters.where(
-    (element) =>
-        element is _ClassParameter &&
-        element.isNullableAndNotIgnored &&
-        element.copyWithAnnotation != null &&
-        element.copyWithAnnotation!.copyWithNull,
-  );
-
-  if (_parameters.isNotEmpty) {
-    return _parameters.map(
-      (e) {
-        final generics = (e as _ClassParameter).generics;
-        return '''
-\$${e.className}CopyWithNull$generics? get ${e.name} {
-    if ($_value.${e.name} != null) {
-    return \$${e.className}CopyWithNull$generics($_value.${e.name}!, 
-    (value) => $_callback($_value.copyWith(${e.name}:  value)));
-  }
-}''';
-      },
-    ).join();
   } else {
     return '';
   }
