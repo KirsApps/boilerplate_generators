@@ -32,9 +32,11 @@ class PropsGenerator extends GeneratorForAnnotation<Props> {
     );
 
     return '''
+// coverage:ignore-start      
     /// @nodoc
     List<Object?> _\$${element.name}Props$generics(${element.name}$generics instance,{List<Object?>? superProps}) => 
         [${fields.map((e) => 'instance.${e.name},').join()} ...?superProps];
+// coverage:ignore-end
         ''';
   }
 }

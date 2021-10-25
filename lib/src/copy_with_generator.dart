@@ -47,6 +47,7 @@ class CopyWithGenerator extends GeneratorForAnnotation<CopyWith> {
     );
 
     return '''
+// coverage:ignore-start    
 /// @nodoc     
 extension \$${element.name}CopyWithExtension$fullGenerics on $className {
 
@@ -105,6 +106,7 @@ ${_deepCopyWith(
 ${_callCopyWithNull(className, parameters)}
 }
 ''' : ''}
+// coverage:ignore-end
 ''';
   }
 }
