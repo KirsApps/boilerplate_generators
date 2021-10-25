@@ -3,8 +3,6 @@ import 'package:boilerplate_generators/src/props_generator.dart';
 import 'package:build/build.dart';
 import 'package:source_gen/source_gen.dart';
 
-export 'src/annotations.dart';
-
 /// Builds generator for Equatable props generation
 Builder propsGenerator(BuilderOptions options) =>
     SharedPartBuilder([PropsGenerator()], 'props');

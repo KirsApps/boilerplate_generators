@@ -1,5 +1,5 @@
 import 'package:analyzer/dart/element/element.dart';
-import 'package:boilerplate_generators/src/annotations.dart';
+import 'package:boilerplate_annotations/boilerplate_annotations.dart';
 import 'package:boilerplate_generators/src/utils.dart';
 import 'package:build/build.dart';
 import 'package:source_gen/source_gen.dart';
