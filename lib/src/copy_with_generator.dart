@@ -58,10 +58,11 @@ ${copyWithNull ? '\$${element.name}CopyWithNull$copyWithGenerics get copyWithNul
     
 /// @nodoc    
 class \$${element.name}CopyWith$fullCopyWithGenerics {
+  // ignore: unused_field
+  final $className $_value;
 
-final $className $_value;
-
-final $_return Function($className) $_callback;
+  // ignore: unused_field
+  final $_return Function($className) $_callback;
 
 \$${element.name}CopyWith(this.$_value, this.$_callback);
 
@@ -83,10 +84,10 @@ ${_callCopyWith(className, parameters)}
 ${copyWithNull ? '''
 /// @nodoc    
 class \$${element.name}CopyWithNull$fullCopyWithGenerics {
-
-final $className  $_value;
-
-final $_return  Function($className) $_callback;
+  // ignore: unused_field
+  final $className  $_value;
+  // ignore: unused_field
+  final $_return  Function($className) $_callback;
 
 \$${element.name}CopyWithNull(this.$_value, this.$_callback);
 
