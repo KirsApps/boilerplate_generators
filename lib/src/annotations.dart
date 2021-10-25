@@ -2,13 +2,13 @@ class Props {
   const Props();
 }
 
-class ExcludeFromProps {
-  const ExcludeFromProps();
+class PropsExclude {
+  const PropsExclude();
 }
 
 const props = Props();
 
-const excludeFromProps = ExcludeFromProps();
+const propsExclude = PropsExclude();
 
 class CopyWith {
   final bool copyWithNull;

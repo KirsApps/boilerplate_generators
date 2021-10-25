@@ -33,11 +33,11 @@ class PropsGenerator extends GeneratorForAnnotation<Props> {
 
     return '''
     /// @nodoc
-    List<Object?> _\$${element.name}Props$generics(${element.name}$generics instance,{List<Object?>? superClassProps}) => 
-        [${fields.map((e) => 'instance.${e.name}').join(',')}, ...?superClassProps];
+    List<Object?> _\$${element.name}Props$generics(${element.name}$generics instance,{List<Object?>? superProps}) => 
+        [${fields.map((e) => 'instance.${e.name},').join()} ...?superProps];
         ''';
   }
 }
 
 bool _isFieldExcluded(FieldElement element) =>
-    const TypeChecker.fromRuntime(ExcludeFromProps).hasAnnotationOf(element);
+    const TypeChecker.fromRuntime(PropsExclude).hasAnnotationOf(element);
