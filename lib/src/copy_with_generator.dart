@@ -189,13 +189,10 @@ String _callCopyWith(String className, _Parameters parameters) {
     return '$value,';
   }
 
-  if (parameters.allParameters.any((element) => !element.ignored)) {
+  final _fields = parameters.allParameters.where((element) => !element.ignored);
+  if (_fields.isNotEmpty) {
     return '''
-$_return call({${[
-      ...parameters.requiredPositional,
-      ...parameters.optionalPositional,
-      ...parameters.named
-    ].where((element) => !element.ignored).map((e) => '${e.type.endsWith('?') ? e.type : '${e.type}?'} ${e.name},').join()}
+$_return call({${_fields.map((e) => '${e.type.endsWith('?') ? e.type : '${e.type}?'} ${e.name},').join()}
   }) => $_callback($className(${[
       ...[
         ...parameters.requiredPositional,
@@ -249,21 +246,11 @@ String _callCopyWithNull(String className, _Parameters parameters) {
     return '$value,';
   }
 
-  final namedNullable =
-      parameters.named.where((element) => element.isNullableAndNotIgnored);
-  final requiredPositionalNullable = parameters.requiredPositional
+  final _fields = parameters.allParameters
       .where((element) => element.isNullableAndNotIgnored);
-  final optionalPositionalNullable = parameters.optionalPositional
-      .where((element) => element.isNullableAndNotIgnored);
-  if (namedNullable.isNotEmpty ||
-      requiredPositionalNullable.isNotEmpty ||
-      optionalPositionalNullable.isNotEmpty) {
+  if (_fields.isNotEmpty) {
     return '''
-$_return call({${[
-      ...requiredPositionalNullable,
-      ...optionalPositionalNullable,
-      ...namedNullable
-    ].map((e) => 'Object? ${e.name} = copyWithIgnore,').join()}
+$_return call({${_fields.map((e) => 'Object? ${e.name} = copyWithIgnore,').join()}
   }) => $_callback($className(${[
       ...[
         ...parameters.requiredPositional,
