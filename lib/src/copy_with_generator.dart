@@ -151,7 +151,10 @@ _Parameters _parseParameters(ClassElement classElement) {
 
   final constructor = classElement.unnamedConstructor;
   if (constructor is! ConstructorElement) {
-    throw '${classElement.name} unnamed constructor required';
+    throw InvalidGenerationSourceError(
+      '${classElement.name} unnamed constructor required',
+      element: classElement,
+    );
   }
   final parameters = constructor.parameters;
   final nonFieldParameters = _nonFieldParameters(classElement, parameters);
