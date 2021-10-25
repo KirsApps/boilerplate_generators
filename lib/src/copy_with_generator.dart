@@ -141,9 +141,6 @@ _Parameters _parseParameters(ClassElement classElement) {
       element: classElement,
     );
   }
-  if (parameters.isEmpty) {
-    throw 'No parameters in ${classElement.name} unnamed constructor';
-  }
   return _Parameters(
     named: parameters.where((p) => p.isNamed).map(_parseParameter).toList(),
     optionalPositional: parameters
