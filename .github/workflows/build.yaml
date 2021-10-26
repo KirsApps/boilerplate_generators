@@ -25,5 +25,8 @@ jobs:
       - name: Analyze
         run: dart analyze --fatal-infos --fatal-warnings .
 
+      - name: Generate code for test
+        run: dart run build_runner build test/boilerplate_generators_test.dart
+
       - name: Run Tests
         run: dart test
