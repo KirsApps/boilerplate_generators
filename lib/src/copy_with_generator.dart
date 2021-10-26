@@ -241,7 +241,7 @@ String _callCopyWithNull(String className, _Parameters parameters) {
       value = '$_value.${parameter.name}';
     } else {
       value =
-          '${parameter.name} == copyWithIgnore ? $_value.${parameter.name} : ${parameter.name} ';
+          '${parameter.name} == copyWithExclude ? $_value.${parameter.name} : ${parameter.name} ';
       if (parameter.type != 'Object?') {
         value += 'as ${parameter.type}';
       }
@@ -253,7 +253,7 @@ String _callCopyWithNull(String className, _Parameters parameters) {
       .where((element) => element.isNullableAndNotIgnored);
   if (_fields.isNotEmpty) {
     return '''
-$_return call({${_fields.map((e) => 'Object? ${e.name} = copyWithIgnore,').join()}
+$_return call({${_fields.map((e) => 'Object? ${e.name} = copyWithExclude,').join()}
   }) => $_callback($className(${[
       ...[
         ...parameters.requiredPositional,
@@ -269,7 +269,7 @@ $_return call({${_fields.map((e) => 'Object? ${e.name} = copyWithIgnore,').join(
 }
 
 bool _isFieldIgnored(FieldElement element) =>
-    const TypeChecker.fromRuntime(CopyWithIgnore).hasAnnotationOf(element);
+    const TypeChecker.fromRuntime(CopyWithExclude).hasAnnotationOf(element);
 
 List<ParameterElement> _nonFieldParameters(
   ClassElement classElement,
