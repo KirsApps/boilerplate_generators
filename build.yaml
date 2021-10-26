@@ -1,4 +1,12 @@
-
+targets:
+  $default:
+    builders:
+      boilerplate_generators|props:
+        generate_for:
+          - test/*.dart
+      boilerplate_generators|copy_with:
+        generate_for:
+          - test/*.dart
 builders:
   props:
     import: "package:boilerplate_generators/builder.dart"
