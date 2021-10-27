@@ -5,8 +5,20 @@
 Set of code generators for reduce boilerplate code writing.
 
 # Generators
+* [Installation](#Installation)
 * [CopyWith](#CopyWith)
 * [Props](#Props)
+
+# Installation
+Add dependencies to your pubspec.yaml
+```yaml
+dependencies:
+  boilerplate_annotations:
+
+dev_dependencies:
+  boilerplate_generators:
+  build_runner:
+```
 
 # CopyWith
 Code generator for copyWith and copyWithNull methods generation with deep copy and field ignore support.
