@@ -14,6 +14,7 @@ Code generator for copyWith and copyWithNull methods generation with deep copy a
 * Annotate class with @copyWith annotation
 * Add part file - part 'your_file_name.g.dart'
 * Run build_runner.
+
 Methods copyWith and copyWithNull will be generated.
 
 ```dart
@@ -38,7 +39,7 @@ class Address  {
 
 ## copyWith and copyWithNull difference
 
-Method copyWith refuses null.
+Method copyWith rejects null.
   ```dart
 @copyWith
 class Payment {
@@ -66,8 +67,8 @@ print(payment.copyWithNull(description: null)); // Payment(id:4, description: nu
   ```
 
 ## Deep copy
-With deep copy support you can call copyWith methods of objects that class contains and get new instance of a class with updated object. 
-Class and objects that class contains must be annotated with @copyWith.
+With deep copy support you can call copyWith methods of objects that class contains and get a new instance of a class with updated object. 
+Class and objects that the class contains must be annotated with @copyWith.
 
   ```dart
 @copyWith
@@ -142,7 +143,7 @@ class Address extends Equatable {
   ```
 
 ## Super class props
-If your class extends from another class that uses Equatable you need to add props from super class. 
+If your class extends from another class that uses Equatable you need to add props from the super class. 
 You need to pass super class props to *superProps* parameter.
 
 ```dart
