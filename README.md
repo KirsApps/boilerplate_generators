@@ -4,11 +4,6 @@
 
 Set of code generators for reduce boilerplate code writing.
 
-# Generators
-* [Installation](#Installation)
-* [CopyWith](#CopyWith)
-* [Props](#Props)
-
 # Installation
 Add dependencies to your pubspec.yaml
 ```yaml
@@ -20,6 +15,9 @@ dev_dependencies:
   build_runner:
 ```
 
+# Generators
+* [CopyWith](#CopyWith)
+* [Props](#Props)
 # CopyWith
 Code generator for copyWith and copyWithNull methods generation with deep copy and field ignore support.
 ## Usage
@@ -140,6 +138,7 @@ Code generator for [equatable](https://pub.dev/packages/equatable) props generat
 * Override props getter to return _${your class name}Props(this);
 * run build_runner.
 
+Generated props will be contained all class fields.
 ```dart
 part 'address.g.dart';
 
