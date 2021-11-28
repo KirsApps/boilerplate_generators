@@ -28,7 +28,7 @@ class PropsGenerator extends GeneratorForAnnotation<Props> {
     }
     final generics = genericTypes(element.typeParameters, fullName: false);
     final fields = element.fields.where(
-      (element) => element.name != 'props' && !_isFieldExcluded(element),
+      (element) => element.isFinal && !_isFieldExcluded(element),
     );
 
     return '''
@@ -41,5 +41,8 @@ class PropsGenerator extends GeneratorForAnnotation<Props> {
   }
 }
 
+// TODO late, static
 bool _isFieldExcluded(FieldElement element) =>
+    element.isStatic ||
+    element.isLate ||
     const TypeChecker.fromRuntime(PropsExclude).hasAnnotationOf(element);
