@@ -164,8 +164,8 @@ _Parameters _parseParameters(ClassElement classElement) {
   );
   if (nonFieldParameters.isNotEmpty) {
     throw InvalidGenerationSourceError(
-      'In ${classElement.name} unnamed constructor founded parameters that are '
-      'not class fields - ${nonFieldParameters.join(', ')}. This parameters are not supported',
+      'In the ${classElement.name} unnamed constructor founded parameters that are '
+      'not class fields - ${nonFieldParameters.join(', ')}. These parameters are not supported',
       element: classElement,
     );
   }

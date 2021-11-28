@@ -22,7 +22,7 @@ class PropsGenerator extends GeneratorForAnnotation<Props> {
       return name == 'Equatable' || name == 'EquatableMixin';
     })) {
       throw InvalidGenerationSourceError(
-        '@Props can only be applied on classes that extends Equatable or uses EquatableMixin. Failing element: ${element.name}',
+        '@Props can only be applied on classes that extends Equatable or uses EquatableMixin.',
         element: element,
       );
     }
