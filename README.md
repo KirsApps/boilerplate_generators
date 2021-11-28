@@ -119,8 +119,8 @@ print(payment.copyWith.customer!(name: 'Bob')); // Payment(id: 4, customer: Cust
   ```
 
 ## Ignore field
-If you want a class field to be excluded from copyWith and copyWithNull methods generation, you need to annotate the field with the @copyWithExclude annotation.
-In this case, it will be impossible to change the field with these methods.
+If you want a class field to be excluded from copyWith and copyWithNull methods generation, you need to annotate this field with the @copyWithExclude annotation.
+In this case, it will be impossible to change this field with these methods.
   ```dart
 @copyWith
 class Payment {
@@ -181,7 +181,7 @@ class Second extends First {
   ```
 
 ## Ignore field
-If you want a class field to be excluded from props generation, you need to annotate the field with the @propsExclude annotation.
+If you want a class field to be excluded from props generation, you need to annotate this field with the @propsExclude annotation.
 In this case, props will not contain this field.
 ```dart
 @props
