@@ -2,7 +2,7 @@
 [![pub](https://img.shields.io/pub/v/boilerplate_generators.svg)](https://pub.dev/packages/boilerplate_generators)
 [![style: lint](https://img.shields.io/badge/style-lint-4BC0F5.svg)](https://pub.dev/packages/lint)
 
-Set of code generators for reduce boilerplate code writing.
+The Set of code generators reduce boilerplate code writing.
 
 # Installation
 Add dependencies to your pubspec.yaml
@@ -18,14 +18,16 @@ dev_dependencies:
 # Generators
 * [CopyWith](#CopyWith)
 * [Props](#Props)
-# CopyWith
-Code generator for copyWith and copyWithNull methods generation with deep copy and field ignore support.
-## Usage
-* Annotate class with @copyWith annotation
-* Add part file - part 'your_file_name.g.dart'
-* Run build_runner.
 
-Methods copyWith and copyWithNull will be generated.
+# CopyWith
+The code generator for copyWith and copyWithNull methods generation supports deep copy and field ignoring.
+
+## Usage
+* Annotate a class with the @copyWith annotation
+* Add a part file - part 'your_file_name.g.dart'
+* Run the build_runner.
+
+Methods copyWith, and copyWithNull will be generated.
 
 ```dart
 part 'address.g.dart';
@@ -37,7 +39,8 @@ class Address  {
     const Address({this.street, this.home});
 }
   ```
-If you want to disable copyWithNull method generation, you need to pass copyWithNull = false to CopyWith annotation.
+If you want to disable the copyWithNull method generation, pass "copyWithNull = false" to the CopyWith annotation.
+
   ```dart
 @CopyWith(copyWithNull: false)
 class Address  {
@@ -49,7 +52,7 @@ class Address  {
 
 ## copyWith and copyWithNull difference
 
-Method copyWith rejects null.
+The copyWith method rejects null.
   ```dart
 @copyWith
 class Payment {
@@ -62,7 +65,7 @@ const payment = Payment(id: 4, description: 'test',);
 
 print(payment.copyWith(description: null)); // Payment(id:4, description: test)
   ```
-Method copyWithNull allow copy with null value.
+The copyWithNull method allows a copy with a null value.
   ```dart
 @copyWith
 class Payment {
@@ -77,8 +80,8 @@ print(payment.copyWithNull(description: null)); // Payment(id:4, description: nu
   ```
 
 ## Deep copy
-With deep copy support you can call copyWith methods of objects that class contains and get a new instance of a class with updated object. 
-Class and objects that the class contains must be annotated with @copyWith.
+With deep copy support, you can call copyWith and copyWithNull methods of objects that a class contains and get a new instance of a class with an updated object. 
+A class and objects that a class contains must be annotated with the @copyWith annotation.
 
   ```dart
 @copyWith
@@ -116,7 +119,7 @@ print(payment.copyWith.customer!(name: 'Bob')); // Payment(id: 4, customer: Cust
   ```
 
 ## Ignore field
-If you want a class field to be excluded from copyWith and copyWithNull methods generation, you need to annotate the field with @copyWithExclude.
+If you want a class field to be excluded from copyWith and copyWithNull methods generation, you need to annotate the field with the @copyWithExclude annotation.
 In this case, it will be impossible to change the field with these methods.
   ```dart
 @copyWith
@@ -130,15 +133,15 @@ class Payment {
   ```
 
 # Props
-Code generator for [equatable](https://pub.dev/packages/equatable) props generation.
+The code generator generates [equatable](https://pub.dev/packages/equatable) props.
 
 ## Usage
-* Annotate class with @props
-* Add part file - part 'your_file_name.g.dart'
-* Override props getter to return _${your class name}Props(this);
-* run build_runner.
+* Annotate a class with the @props annotation
+* Add a part file - part 'your_file_name.g.dart'
+* Override the props getter to return the _${your class name}Props(this);
+* Run the build_runner.
 
-Generated props will be contained all class fields.
+Generated props will contain all final class fields.
 ```dart
 part 'address.g.dart';
 
@@ -154,8 +157,8 @@ class Address extends Equatable {
   ```
 
 ## Super class props
-If your class extends from another class that uses Equatable you need to add props from the super class. 
-You need to pass super class props to *superProps* parameter.
+If your class extends from another class that uses Equatable, you need to add props from a superclass. 
+You need to pass superclass props to the *superProps* parameter.
 
 ```dart
 @props
@@ -178,7 +181,7 @@ class Second extends First {
   ```
 
 ## Ignore field
-If you want a class field to be excluded from props generation, you need to annotate the field with @propsExclude.
+If you want a class field to be excluded from props generation, you need to annotate the field with the @propsExclude annotation.
 In this case, props will not contain this field.
 ```dart
 @props
