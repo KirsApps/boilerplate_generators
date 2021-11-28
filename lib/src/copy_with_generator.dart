@@ -1,6 +1,5 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
-import 'package:analyzer/dart/element/type.dart';
 import 'package:boilerplate_annotations/boilerplate_annotations.dart';
 import 'package:boilerplate_generators/src/utils.dart';
 import 'package:build/build.dart';
@@ -160,7 +159,9 @@ _Parameters _parseParameters(ClassElement classElement) {
     );
   }
   final parameters = constructor.parameters;
-  final nonFieldParameters = _nonFieldParameters(classElement, parameters);
+  final nonFieldParameters = parameters.where(
+    (element) => _classOrSuperClassField(classElement, element.name) == null,
+  );
   if (nonFieldParameters.isNotEmpty) {
     throw InvalidGenerationSourceError(
       'In ${classElement.name} unnamed constructor founded parameters that are '
@@ -270,28 +271,6 @@ $_return call({${_fields.map((e) => 'Object? ${e.name} = copyWithExclude,').join
 
 bool _isFieldIgnored(FieldElement element) =>
     const TypeChecker.fromRuntime(CopyWithExclude).hasAnnotationOf(element);
-
-List<ParameterElement> _nonFieldParameters(
-  ClassElement classElement,
-  List<ParameterElement> parameters,
-) {
-  bool _superClassHasField(InterfaceType? interfaceType, String fieldName) {
-    if (interfaceType != null) {
-      return interfaceType.element.getField(fieldName) != null ||
-          _superClassHasField(interfaceType.superclass, fieldName);
-    } else {
-      return false;
-    }
-  }
-
-  return parameters
-      .where(
-        (element) =>
-            classElement.getField(element.name) == null &&
-            !_superClassHasField(classElement.supertype, element.name),
-      )
-      .toList();
-}
 
 FieldElement? _classOrSuperClassField(
   ClassElement classElement,
