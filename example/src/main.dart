@@ -1,7 +1,7 @@
 import 'package:boilerplate_annotations/boilerplate_annotations.dart';
 import 'package:equatable/equatable.dart';
 
-part 'example.g.dart';
+part 'main.g.dart';
 
 @props
 @copyWith
