@@ -1,3 +1,7 @@
+## 1.1.1
+
+- Linter fixed.
+
 ## 1.1.0
 
 - Dependencies updated. Requires Dart `sdk: '>=2.17.0'`

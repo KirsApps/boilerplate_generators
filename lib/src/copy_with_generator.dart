@@ -123,10 +123,11 @@ _Parameters _parseParameters(ClassElement classElement) {
 
       return CopyWith(copyWithNull: copyWithNull!);
     }
+    return null;
   }
 
   _Parameter _parseParameter(ParameterElement parameterElement) {
-    final parameterTypeElement = parameterElement.type.element;
+    final parameterTypeElement = parameterElement.type.element2;
     final fieldElement =
         _classOrSuperClassField(classElement, parameterElement.name);
     final type = parameterElement.type.getDisplayString(withNullability: true);
@@ -193,10 +194,10 @@ String _callCopyWith(String className, _Parameters parameters) {
     return '$value,';
   }
 
-  final _fields = parameters.allParameters.where((element) => !element.ignored);
-  if (_fields.isNotEmpty) {
+  final fields = parameters.allParameters.where((element) => !element.ignored);
+  if (fields.isNotEmpty) {
     return '''
-$_return call({${_fields.map((e) => '${e.type.endsWith('?') ? e.type : '${e.type}?'} ${e.name},').join()}
+$_return call({${fields.map((e) => '${e.type.endsWith('?') ? e.type : '${e.type}?'} ${e.name},').join()}
   }) => $_callback($className(${[
       ...[
         ...parameters.requiredPositional,
@@ -215,8 +216,8 @@ String _deepCopyWith(
   List<_Parameter> parameters, {
   required String generatedClassName,
 }) {
-  String _addIfNullable(_Parameter _parameter, String value) =>
-      _parameter.nullable ? value : '';
+  String _addIfNullable(_Parameter parameter, String value) =>
+      parameter.nullable ? value : '';
   if (parameters.isNotEmpty) {
     return parameters.map(
       (e) {
@@ -250,11 +251,11 @@ String _callCopyWithNull(String className, _Parameters parameters) {
     return '$value,';
   }
 
-  final _fields = parameters.allParameters
+  final fields = parameters.allParameters
       .where((element) => element.isNullableAndNotIgnored);
-  if (_fields.isNotEmpty) {
+  if (fields.isNotEmpty) {
     return '''
-$_return call({${_fields.map((e) => 'Object? ${e.name} = copyWithExclude,').join()}
+$_return call({${fields.map((e) => 'Object? ${e.name} = copyWithExclude,').join()}
   }) => $_callback($className(${[
       ...[
         ...parameters.requiredPositional,
@@ -273,13 +274,13 @@ bool _isFieldIgnored(FieldElement element) =>
     const TypeChecker.fromRuntime(CopyWithExclude).hasAnnotationOf(element);
 
 FieldElement? _classOrSuperClassField(
-  ClassElement classElement,
+  InterfaceElement classElement,
   String fieldName,
 ) {
   final fieldElement = classElement.getField(fieldName);
   if (fieldElement == null && classElement.supertype != null) {
     return _classOrSuperClassField(
-      classElement.supertype!.element,
+      classElement.supertype!.element2,
       fieldName,
     );
   } else {
@@ -323,13 +324,13 @@ class _ClassParameter extends _Parameter {
   final String className;
   final CopyWith? copyWithAnnotation;
   _ClassParameter({
-    required bool ignored,
-    required String name,
-    required bool nullable,
-    required String type,
+    required super.ignored,
+    required super.name,
+    required super.nullable,
+    required super.type,
     required this.copyWithAnnotation,
     required this.className,
-  }) : super(ignored: ignored, name: name, nullable: nullable, type: type);
+  });
 
   String get generics {
     final result = RegExp('<.+?>').firstMatch(type)?.group(0);
