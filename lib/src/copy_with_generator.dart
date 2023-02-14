@@ -5,6 +5,8 @@ import 'package:boilerplate_generators/src/utils.dart';
 import 'package:build/build.dart';
 import 'package:source_gen/source_gen.dart';
 
+//ignore_for_file: no_leading_underscores_for_local_identifiers
+
 const String _value = '_value';
 const String _callback = '_callback';
 const String _return = '\$Return';
@@ -127,7 +129,7 @@ _Parameters _parseParameters(ClassElement classElement) {
   }
 
   _Parameter _parseParameter(ParameterElement parameterElement) {
-    final parameterTypeElement = parameterElement.type.element2;
+    final parameterTypeElement = parameterElement.type.element;
     final fieldElement =
         _classOrSuperClassField(classElement, parameterElement.name);
     final type = parameterElement.type.getDisplayString(withNullability: true);
@@ -280,7 +282,7 @@ FieldElement? _classOrSuperClassField(
   final fieldElement = classElement.getField(fieldName);
   if (fieldElement == null && classElement.supertype != null) {
     return _classOrSuperClassField(
-      classElement.supertype!.element2,
+      classElement.supertype!.element,
       fieldName,
     );
   } else {

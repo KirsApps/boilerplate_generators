@@ -1,3 +1,7 @@
+## 1.1.2
+
+- Increased analyzer version.
+
 ## 1.1.1
 
 - Linter fixed.
