@@ -1,3 +1,7 @@
+## 2.0.0
+
+- Requires Dart `sdk: '>=3.0.0'`
+
 ## 1.1.2
 
 - Increased analyzer version.
