@@ -14,6 +14,7 @@ builders:
     build_extensions: {".dart": [".props.g.dart"]}
     auto_apply: dependents
     build_to: cache
+    runs_before: ["source_gen|combining_builder"]
     applies_builders: ["source_gen|combining_builder"]
   copy_with:
     import: "package:boilerplate_generators/builder.dart"
@@ -21,4 +22,5 @@ builders:
     build_extensions: {".dart": [".copy_with.g.dart"]}
     auto_apply: dependents
     build_to: cache
+    runs_before: ["source_gen|combining_builder"]
     applies_builders: ["source_gen|combining_builder"]

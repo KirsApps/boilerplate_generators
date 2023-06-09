@@ -1,3 +1,7 @@
+## 2.0.2
+
+- Added runs_before in build.yaml
+
 ## 2.0.1
 
 - Topics in pubspec updated
