@@ -205,7 +205,7 @@ $_return call({${fields.map((e) => '${e.type.endsWith('?') ? e.type : '${e.type}
         ...parameters.requiredPositional,
         ...parameters.optionalPositional,
       ].map(_parameterToValue),
-      ...parameters.named.map((e) => '${e.name} : ${_parameterToValue(e)}')
+      ...parameters.named.map((e) => '${e.name} : ${_parameterToValue(e)}'),
     ].join()}
 ));    
 ''';
@@ -263,7 +263,7 @@ $_return call({${fields.map((e) => 'Object? ${e.name} = copyWithExclude,').join(
         ...parameters.requiredPositional,
         ...parameters.optionalPositional,
       ].map(_parameterToValue),
-      ...parameters.named.map((e) => '${e.name} : ${_parameterToValue(e)}')
+      ...parameters.named.map((e) => '${e.name} : ${_parameterToValue(e)}'),
     ].join()}
 ));    
 ''';
