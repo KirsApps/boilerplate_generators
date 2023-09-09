@@ -1,3 +1,7 @@
+## 2.0.3
+
+- Fixed generic type parameters in PropsGenerator.
+
 ## 2.0.2
 
 - Added runs_before in build.yaml
