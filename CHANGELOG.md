@@ -1,3 +1,7 @@
+## 2.0.4
+
+- Support the latest `package:analyzer`.
+
 ## 2.0.3
 
 - Fixed generic type parameters in PropsGenerator.

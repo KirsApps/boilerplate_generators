@@ -1,6 +1,6 @@
 name: boilerplate_generators
 description: Set of code generators for copyWith and copyWithNull methods with deepCopy support, Equatable props generation.
-version: 2.0.3
+version: 2.0.4
 homepage: https://github.com/KirsApps/boilerplate_generators
 topics:
   - codegen
@@ -11,7 +11,7 @@ environment:
 
 
 dependencies:
-  analyzer: ^5.2.0
+  analyzer: '>=5.12.0 <7.0.0'  
   boilerplate_annotations: ^2.0.0
   build: ^2.3.0
   source_gen: ^1.2.2
