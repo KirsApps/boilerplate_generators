@@ -1,3 +1,7 @@
+## 2.0.6
+
+- Increased supported analyzer version.
+
 ## 2.0.5
 
 - Updated code to support latest dependencies.

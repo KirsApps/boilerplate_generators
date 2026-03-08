@@ -11,7 +11,7 @@ environment:
 
 
 dependencies:
-  analyzer: '>=6.2.0 <10.0.0'  
+  analyzer: '>=6.2.0 <11.0.0'  
   boilerplate_annotations: ^2.0.0
   build: '^4.0.0'
   source_gen: '^4.0.0'
