@@ -6,7 +6,7 @@ String genericTypes(
   String additionalGeneric = '',
 }) =>
     typeParameters.isNotEmpty
-        ? '<${typeParameters.map((e) => fullName ? e.getDisplayString(withNullability: true) : e.name).join(',')}${additionalGeneric.isNotEmpty ? ', $additionalGeneric' : ''}>'
+        ? '<${typeParameters.map((e) => fullName ? e.displayString(multiline: true) : e.name).join(',')}${additionalGeneric.isNotEmpty ? ', $additionalGeneric' : ''}>'
         : additionalGeneric.isNotEmpty
             ? '<$additionalGeneric>'
             : '';

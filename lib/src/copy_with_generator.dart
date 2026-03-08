@@ -118,7 +118,7 @@ _Parameters _parseParameters(ClassElement classElement) {
     ClassElement classElement,
   ) {
     final annotation =
-        const TypeChecker.fromRuntime(CopyWith).firstAnnotationOf(classElement);
+        const TypeChecker.typeNamed(CopyWith).firstAnnotationOf(classElement);
     if (annotation != null) {
       final reader = ConstantReader(annotation);
       final copyWithNull = reader.read('copyWithNull').literalValue as bool?;
@@ -128,24 +128,24 @@ _Parameters _parseParameters(ClassElement classElement) {
     return null;
   }
 
-  _Parameter _parseParameter(ParameterElement parameterElement) {
+  _Parameter _parseParameter(FormalParameterElement parameterElement) {
     final parameterTypeElement = parameterElement.type.element;
     final fieldElement =
-        _classOrSuperClassField(classElement, parameterElement.name);
-    final type = parameterElement.type.getDisplayString(withNullability: true);
+        _classOrSuperClassField(classElement, parameterElement.name!);
+    final type = parameterElement.type.getDisplayString();
     if (parameterTypeElement is ClassElement) {
       return _ClassParameter(
-        name: parameterElement.name,
+        name: parameterElement.name!,
         type: type,
         nullable: parameterElement.type.nullabilitySuffix ==
             NullabilitySuffix.question,
         ignored: _isFieldIgnored(fieldElement!),
-        className: parameterTypeElement.name,
+        className: parameterTypeElement.name!,
         copyWithAnnotation: _copyWithAnnotation(parameterTypeElement),
       );
     } else {
       return _Parameter(
-        name: parameterElement.name,
+        name: parameterElement.name!,
         type: type,
         nullable: parameterElement.type.nullabilitySuffix ==
             NullabilitySuffix.question,
@@ -161,9 +161,9 @@ _Parameters _parseParameters(ClassElement classElement) {
       element: classElement,
     );
   }
-  final parameters = constructor.parameters;
+  final parameters = constructor.formalParameters;
   final nonFieldParameters = parameters.where(
-    (element) => _classOrSuperClassField(classElement, element.name) == null,
+    (element) => _classOrSuperClassField(classElement, element.name!) == null,
   );
   if (nonFieldParameters.isNotEmpty) {
     throw InvalidGenerationSourceError(
@@ -273,7 +273,7 @@ $_return call({${fields.map((e) => 'Object? ${e.name} = copyWithExclude,').join(
 }
 
 bool _isFieldIgnored(FieldElement element) =>
-    const TypeChecker.fromRuntime(CopyWithExclude).hasAnnotationOf(element);
+    const TypeChecker.typeNamed(CopyWithExclude).hasAnnotationOf(element);
 
 FieldElement? _classOrSuperClassField(
   InterfaceElement classElement,

@@ -18,7 +18,7 @@ class PropsGenerator extends GeneratorForAnnotation<Props> {
       );
     }
     if (!element.allSupertypes.any((element) {
-      final name = element.getDisplayString(withNullability: false);
+      final name = element.getDisplayString();
       return name == 'Equatable' || name == 'EquatableMixin';
     })) {
       throw InvalidGenerationSourceError(
@@ -46,4 +46,4 @@ class PropsGenerator extends GeneratorForAnnotation<Props> {
 bool _isFieldExcluded(FieldElement element) =>
     element.isStatic ||
     element.isLate ||
-    const TypeChecker.fromRuntime(PropsExclude).hasAnnotationOf(element);
+    const TypeChecker.typeNamed(PropsExclude).hasAnnotationOf(element);

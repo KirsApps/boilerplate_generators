@@ -1,3 +1,7 @@
+## 2.0.5
+
+- Updated code to support latest dependencies.
+
 ## 2.0.4
 
 - Support the latest `package:analyzer`.
