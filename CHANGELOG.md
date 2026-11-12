@@ -1,3 +1,7 @@
+## 2.0.8
+
+- Increased supported build version.
+
 ## 2.0.7
 
 - Increased supported analyzer version.
