@@ -1,3 +1,7 @@
+## 2.0.9
+
+- Increased supported equatable version.
+
 ## 2.0.8
 
 - Increased supported build version.
